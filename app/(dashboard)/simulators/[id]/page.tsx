@@ -89,7 +89,7 @@ export default function SimulatorEditPage() {
     kpis: '',
     syllabus: '',
     devObjectives: '',
-    attachmentType: 'NONE' as const,
+    attachmentType: 'NONE' as 'LINK' | 'EMBED' | 'FILE' | 'NONE',
     attachmentUrl: '',
     attachmentFilePath: '',
     attachmentEmbedHtml: '',

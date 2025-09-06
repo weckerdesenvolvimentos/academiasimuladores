@@ -50,9 +50,9 @@ export async function POST(request: NextRequest) {
       const areasSheet = workbook.Sheets.Areas;
       const areasData = XLSX.utils.sheet_to_json(areasSheet);
 
-      for (const [index, areaData] of areasData.entries()) {
+      for (const [index, areaData] of Array.from(areasData.entries())) {
         try {
-          const name = areaData.Nome as string;
+          const name = (areaData as any).Nome as string;
           if (!name) continue;
 
           const slug = slugify(name);
@@ -80,10 +80,10 @@ export async function POST(request: NextRequest) {
       const subareasSheet = workbook.Sheets.Subareas;
       const subareasData = XLSX.utils.sheet_to_json(subareasSheet);
 
-      for (const [index, subareaData] of subareasData.entries()) {
+      for (const [index, subareaData] of Array.from(subareasData.entries())) {
         try {
-          const name = subareaData.Nome as string;
-          const areaName = subareaData['Área'] as string;
+          const name = (subareaData as any).Nome as string;
+          const areaName = (subareaData as any)['Área'] as string;
 
           if (!name || !areaName) continue;
 
@@ -125,11 +125,11 @@ export async function POST(request: NextRequest) {
       const groupsSheet = workbook.Sheets.Grupos;
       const groupsData = XLSX.utils.sheet_to_json(groupsSheet);
 
-      for (const [index, groupData] of groupsData.entries()) {
+      for (const [index, groupData] of Array.from(groupsData.entries())) {
         try {
-          const name = groupData.Nome as string;
-          const context = groupData.Contexto as string;
-          const codeBase = groupData['Código Base'] as string;
+          const name = (groupData as any).Nome as string;
+          const context = (groupData as any).Contexto as string;
+          const codeBase = (groupData as any)['Código Base'] as string;
 
           if (!name || !context || !codeBase) continue;
 
@@ -156,20 +156,20 @@ export async function POST(request: NextRequest) {
       const simulatorsSheet = workbook.Sheets.Simuladores;
       const simulatorsData = XLSX.utils.sheet_to_json(simulatorsSheet);
 
-      for (const [index, simulatorData] of simulatorsData.entries()) {
+      for (const [index, simulatorData] of Array.from(simulatorsData.entries())) {
         try {
-          const discipline = simulatorData.Disciplina as string;
-          const groupName = simulatorData.Grupo as string;
-          const areaName = simulatorData['Área'] as string;
-          const subareaName = simulatorData['Subárea'] as string;
-          const learningObjectives = simulatorData['Objetivos de Aprendizagem'] as string;
-          const gameMechanics = simulatorData['Mecânicas do Jogo'] as string;
-          const kpis = simulatorData.KPIs as string;
-          const syllabus = simulatorData.Ementa as string;
-          const devObjectives = simulatorData['Objetivos de Desenvolvimento'] as string;
-          const attachmentType = simulatorData['Tipo de Anexo'] as string;
-          const attachmentUrl = simulatorData['URL do Anexo'] as string;
-          const isPublished = simulatorData.Publicado === 'Sim' || simulatorData.Publicado === true;
+          const discipline = (simulatorData as any).Disciplina as string;
+          const groupName = (simulatorData as any).Grupo as string;
+          const areaName = (simulatorData as any)['Área'] as string;
+          const subareaName = (simulatorData as any)['Subárea'] as string;
+          const learningObjectives = (simulatorData as any)['Objetivos de Aprendizagem'] as string;
+          const gameMechanics = (simulatorData as any)['Mecânicas do Jogo'] as string;
+          const kpis = (simulatorData as any).KPIs as string;
+          const syllabus = (simulatorData as any).Ementa as string;
+          const devObjectives = (simulatorData as any)['Objetivos de Desenvolvimento'] as string;
+          const attachmentType = (simulatorData as any)['Tipo de Anexo'] as string;
+          const attachmentUrl = (simulatorData as any)['URL do Anexo'] as string;
+          const isPublished = (simulatorData as any).Publicado === 'Sim' || (simulatorData as any).Publicado === true;
 
           if (!discipline || !groupName || !areaName || !subareaName || !learningObjectives || !gameMechanics || !kpis) {
             continue;
@@ -248,14 +248,14 @@ export async function POST(request: NextRequest) {
       const roadmapSheet = workbook.Sheets.Roadmap;
       const roadmapData = XLSX.utils.sheet_to_json(roadmapSheet);
 
-      for (const [index, roadmapItem] of roadmapData.entries()) {
+      for (const [index, roadmapItem] of Array.from(roadmapData.entries())) {
         try {
-          const groupName = roadmapItem.Grupo as string;
-          const status = roadmapItem.Status as string;
-          const reach = Number(roadmapItem.Reach);
-          const impact = Number(roadmapItem.Impact);
-          const confidence = Number(roadmapItem.Confidence);
-          const effort = Number(roadmapItem.Effort);
+          const groupName = (roadmapItem as any).Grupo as string;
+          const status = (roadmapItem as any).Status as string;
+          const reach = Number((roadmapItem as any).Reach);
+          const impact = Number((roadmapItem as any).Impact);
+          const confidence = Number((roadmapItem as any).Confidence);
+          const effort = Number((roadmapItem as any).Effort);
 
           if (!groupName || isNaN(reach) || isNaN(impact) || isNaN(confidence) || isNaN(effort)) {
             continue;

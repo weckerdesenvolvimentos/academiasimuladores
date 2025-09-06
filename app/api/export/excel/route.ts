@@ -204,7 +204,7 @@ export async function GET(request: NextRequest) {
       buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
     }
 
-    return new NextResponse(buffer, {
+    return new NextResponse(buffer as BodyInit, {
       headers: {
         'Content-Type': format === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': `attachment; filename="${fileName}"`,

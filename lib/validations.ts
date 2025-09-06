@@ -102,13 +102,13 @@ export const reportQuerySchema = z.object({
 
 // File upload schemas
 export const fileUploadSchema = z.object({
-  file: z.instanceof(File, 'Arquivo é obrigatório'),
+  file: z.instanceof(File, { message: 'Arquivo é obrigatório' }),
   type: z.string().min(1, 'Tipo é obrigatório'),
 });
 
 // Import/Export schemas
 export const importExcelSchema = z.object({
-  file: z.instanceof(File, 'Arquivo Excel é obrigatório'),
+  file: z.instanceof(File, { message: 'Arquivo Excel é obrigatório' }),
 });
 
 export const exportExcelSchema = z.object({
