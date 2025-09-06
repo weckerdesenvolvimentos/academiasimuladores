@@ -1,5 +1,8 @@
 import { Navigation } from '@/components/navigation';
 
+// Forçar renderização dinâmica para evitar prerendering com Supabase
+export const dynamic = 'force-dynamic';
+
 export default function DashboardLayout({
   children,
 }: {
