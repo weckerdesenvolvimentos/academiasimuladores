@@ -1,6 +1,5 @@
-import { createServerClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
 import { prisma } from './prisma';
 
 export type UserRole = 'VIEWER' | 'EDITOR' | 'ADMIN';
@@ -50,6 +49,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       role: dbUser.role as UserRole,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error getting current user:', error);
     return null;
   }
@@ -91,7 +91,7 @@ export function canAdmin(user: AuthUser | null): boolean {
   return user?.role === 'ADMIN';
 }
 
-export async function createUserFromSupabase(supabaseUser: any) {
+export async function createUserFromSupabase(supabaseUser: { email: string; user_metadata?: { full_name?: string } }) {
   const existingUser = await prisma.user.findUnique({
     where: { email: supabaseUser.email },
   });
