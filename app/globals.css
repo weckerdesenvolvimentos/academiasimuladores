@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 8%; /* #0A1A24 */
+    --foreground: 210 100% 98%; /* #F3FAFF */
+    --card: 210 40% 15%; /* #112B3A */
+    --card-foreground: 210 100% 98%; /* #F3FAFF */
+    --popover: 210 40% 15%; /* #112B3A */
+    --popover-foreground: 210 100% 98%; /* #F3FAFF */
+    --primary: 195 60% 50%; /* #2FA3C7 */
+    --primary-foreground: 210 40% 8%; /* #0A1A24 */
+    --primary-600: 195 60% 45%; /* #2388A8 */
+    --primary-700: 195 60% 40%; /* #1C6E89 */
+    --secondary: 210 40% 20%;
+    --secondary-foreground: 210 100% 98%;
+    --muted: 210 15% 50%; /* #708090 */
+    --muted-foreground: 210 15% 70%;
+    --accent: 195 70% 65%; /* #57C1E8 */
+    --accent-foreground: 210 40% 8%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 100% 98%;
+    --border: 210 40% 25%; /* #1E3646 */
+    --input: 210 40% 25%;
+    --ring: 195 60% 50%;
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+}
+
+@layer components {
+  .gradient-overlay {
+    background: linear-gradient(
+      135deg,
+      rgba(10, 26, 36, 0.8) 0%,
+      rgba(17, 43, 58, 0.7) 100%
+    );
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:shadow-primary/10;
+  }
+
+  .button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary-600 focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  .input-focus {
+    @apply focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #2fa3c7 0%, #57c1e8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .border-gradient {
+    border-image: linear-gradient(135deg, #2fa3c7 0%, #57c1e8 100%) 1;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-700;
+}
+
+/* Rich text editor styles */
+.ProseMirror {
+  @apply outline-none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  @apply text-muted-foreground float-left h-0 pointer-events-none;
+  content: attr(data-placeholder);
+}
+
+.ProseMirror a {
+  @apply text-primary hover:text-primary-600 underline;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  @apply pl-6;
+}
+
+.ProseMirror ul {
+  @apply list-disc;
+}
+
+.ProseMirror ol {
+  @apply list-decimal;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  @apply font-semibold mt-4 mb-2;
+}
+
+.ProseMirror h1 {
+  @apply text-2xl;
+}
+
+.ProseMirror h2 {
+  @apply text-xl;
+}
+
+.ProseMirror h3 {
+  @apply text-lg;
+}
+
+.ProseMirror blockquote {
+  @apply border-l-4 border-primary pl-4 italic text-muted-foreground;
+}
+
+.ProseMirror code {
+  @apply bg-muted px-1 py-0.5 rounded text-sm;
+}
+
+.ProseMirror pre {
+  @apply bg-muted p-4 rounded-lg overflow-x-auto;
+}
+
+.ProseMirror pre code {
+  @apply bg-transparent p-0;
+}
+
+/* Chart container styles */
+.recharts-wrapper {
+  @apply w-full h-full;
+}
+
+.recharts-cartesian-axis-tick-value {
+  @apply fill-muted-foreground text-xs;
+}
+
+.recharts-legend-item-text {
+  @apply text-foreground;
+}
+
+/* Loading animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Focus styles for accessibility */
+.focus-visible {
+  @apply outline-none ring-2 ring-primary/40 ring-offset-2 ring-offset-background;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

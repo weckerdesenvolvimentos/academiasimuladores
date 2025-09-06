@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AttachmentType {
+  LINK
+  EMBED
+  FILE
+  NONE
+}
+
+enum RoadmapStatus {
+  IDEIA
+  PROTOTIPO
+  PILOTO
+  PRODUCAO
+}
+
+enum UserRole {
+  VIEWER
+  EDITOR
+  ADMIN
+}
+
+model Area {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subareas           Subarea[]
+  simulatorDisciplines SimulatorDiscipline[]
+
+  @@map("areas")
+}
+
+model Subarea {
+  id      String @id @default(cuid())
+  areaId  String
+  name    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  area                Area @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  simulatorDisciplines SimulatorDiscipline[]
+
+  @@unique([areaId, name])
+  @@map("subareas")
+}
+
+model SimulatorGroup {
+  id        String   @id @default(cuid())
+  name      String
+  context   String
+  codeBase  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  simulatorDisciplines SimulatorDiscipline[]
+  roadmap              Roadmap?
+
+  @@map("simulator_groups")
+}
+
+model SimulatorDiscipline {
+  id                   String         @id @default(cuid())
+  groupId              String
+  discipline           String
+  areaId               String
+  subareaId            String
+  code                 String         @unique
+  learningObjectives   String
+  gameMechanics        String
+  kpis                 String
+  syllabus             String?
+  devObjectives        String?
+  attachmentType       AttachmentType @default(NONE)
+  attachmentUrl        String?
+  attachmentFilePath   String?
+  attachmentEmbedHtml  String?
+  isPublished          Boolean        @default(false)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  group   SimulatorGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  area    Area          @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  subarea Subarea       @relation(fields: [subareaId], references: [id], onDelete: Cascade)
+
+  @@map("simulator_disciplines")
+}
+
+model Roadmap {
+  id         String        @id @default(cuid())
+  groupId    String        @unique
+  status     RoadmapStatus @default(IDEIA)
+  reach      Float
+  impact     Float
+  confidence Float
+  effort     Float
+  riceScore  Float
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  group SimulatorGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@map("roadmap")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      UserRole @default(VIEWER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
