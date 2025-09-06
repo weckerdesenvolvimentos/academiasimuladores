@@ -3,6 +3,8 @@ import { requireRole } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase';
 import { fileUploadSchema } from '@/lib/validations';
 
+export const runtime = 'nodejs';
+
 const ALLOWED_FILE_TYPES = [
   'video/mp4',
   'video/webm',

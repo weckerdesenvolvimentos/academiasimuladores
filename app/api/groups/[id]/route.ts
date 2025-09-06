@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { simulatorGroupSchema } from '@/lib/validations';
 import { requireRole } from 'lib/auth';
 
+export const runtime = 'nodejs';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }

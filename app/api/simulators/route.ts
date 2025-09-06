@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { simulatorDisciplineSchema, simulatorQuerySchema } from '@/lib/validations';
 import { requireRole, canEdit } from '@/lib/auth';
+
+export const runtime = 'nodejs';
 import { generateCode } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {

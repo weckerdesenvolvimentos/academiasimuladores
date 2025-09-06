@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { areaSchema } from '@/lib/validations';
 import { requireRole } from '@/lib/auth';
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     const areas = await prisma.area.findMany({

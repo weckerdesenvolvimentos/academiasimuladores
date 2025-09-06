@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { roadmapSchema } from '@/lib/validations';
 import { requireRole } from '@/lib/auth';
+
+export const runtime = 'nodejs';
 import { calculateRiceScore } from '@/lib/utils';
 
 export async function GET() {

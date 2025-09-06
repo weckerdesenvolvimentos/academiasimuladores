@@ -4,6 +4,8 @@ import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
 import { generateCode, slugify } from '@/lib/utils';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     await requireRole('EDITOR');

@@ -4,6 +4,8 @@ import { exportExcelSchema } from '@/lib/validations';
 import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
 
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   try {
     const user = await requireRole('VIEWER');

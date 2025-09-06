@@ -1,24 +1,19 @@
 [build]
-  command = "npm run build"
+  command = "npx prisma generate && npm run build"
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
   NPM_VERSION = "9"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 [context.production]
-  command = "npm run build"
+  command = "npx prisma generate && npm run build"
 
 [context.deploy-preview]
-  command = "npm run build"
+  command = "npx prisma generate && npm run build"
 
 [context.branch-deploy]
-  command = "npm run build"
+  command = "npx prisma generate && npm run build"
 
 # Headers for security
 [[headers]]
