@@ -4,6 +4,8 @@ import { roadmapSchema } from '@/lib/validations';
 import { requireRole } from '@/lib/auth';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { calculateRiceScore } from '@/lib/utils';
 
 export async function GET() {

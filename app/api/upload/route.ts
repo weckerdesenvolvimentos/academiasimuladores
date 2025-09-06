@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/auth';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getServerSupabase } from '@/lib/supabase';
 import { fileUploadSchema } from '@/lib/validations';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const ALLOWED_FILE_TYPES = [
   'video/mp4',
@@ -23,6 +25,7 @@ const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 export async function POST(request: NextRequest) {
   try {
     const user = await requireRole('EDITOR');
+    const supabase = getServerSupabase(); // criado em tempo de requisição
     
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -65,7 +68,7 @@ export async function POST(request: NextRequest) {
     const fileName = `${user.id}/${timestamp}-${file.name}`;
 
     // Upload to Supabase Storage
-    const { data, error } = await supabaseAdmin.storage
+    const { data, error } = await supabase.storage
       .from('simulators')
       .upload(fileName, file, {
         cacheControl: '3600',
@@ -84,7 +87,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get public URL
-    const { data: urlData } = supabaseAdmin.storage
+    const { data: urlData } = supabase.storage
       .from('simulators')
       .getPublicUrl(fileName);
 

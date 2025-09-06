@@ -4,6 +4,8 @@ import { simulatorDisciplineSchema, simulatorQuerySchema } from '@/lib/validatio
 import { requireRole, canEdit } from '@/lib/auth';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { generateCode } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getServerSupabase } from '@/lib/supabase';
 import { requireRole } from '@/lib/auth';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(
   request: NextRequest,
@@ -8,12 +12,13 @@ export async function GET(
 ) {
   try {
     const user = await requireRole('VIEWER');
+    const supabase = getServerSupabase(); // criado em tempo de requisição
     
     const { path } = params;
     const fullPath = decodeURIComponent(path);
 
     // Get file from Supabase Storage
-    const { data, error } = await supabaseAdmin.storage
+    const { data, error } = await supabase.storage
       .from('simulators')
       .download(fullPath);
 
@@ -29,7 +34,7 @@ export async function GET(
     }
 
     // Get file info
-    const fileInfo = await supabaseAdmin.storage
+    const fileInfo = await supabase.storage
       .from('simulators')
       .getPublicUrl(fullPath);
 

@@ -1,17 +1,32 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+// Apenas para server (API routes, uploads, exports)
+export function getServerSupabase() {
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY; // para Storage/CRUD server-side
+  if (!url || !key) {
+    throw new Error('Supabase server credentials missing (SUPABASE_URL / SERVICE_ROLE_KEY)');
+  }
+  return createClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { 'x-application-name': 'simuladores-admin' } },
+  });
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Para CLIENT components/páginas (usar somente em componentes client)
+export function getBrowserSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    throw new Error('Supabase browser credentials missing (NEXT_PUBLIC_SUPABASE_URL/ANON_KEY)');
+  }
+  return createClient(url, key);
+}
 
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
+// Manter compatibilidade com código existente (DEPRECATED - usar getServerSupabase)
+export function getSupabaseAdmin() {
+  return getServerSupabase();
+}
 
 export type Database = {
   public: {
