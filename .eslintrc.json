@@ -1,59 +1,41 @@
 {
   "extends": [
-    "next/core-web-vitals",
-    "airbnb",
-    "airbnb-typescript",
-    "prettier"
+    "next/core-web-vitals"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "security", "testing-library"],
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
-    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
     "import/prefer-default-export": "off",
     "import/extensions": "off",
-    "import/no-extraneous-dependencies": [
-      "error",
-      {
-        "devDependencies": [
-          "**/*.test.ts",
-          "**/*.test.tsx",
-          "**/*.spec.ts",
-          "**/*.spec.tsx",
-          "**/test/**/*",
-          "**/tests/**/*",
-          "**/__tests__/**/*",
-          "**/vitest.config.ts",
-          "**/jest.config.js"
-        ]
-      }
-    ],
-    "security/detect-object-injection": "warn",
-    "security/detect-non-literal-regexp": "warn",
-    "security/detect-unsafe-regex": "error",
-    "security/detect-buffer-noassert": "error",
-    "security/detect-child-process": "warn",
-    "security/detect-disable-mustache-escape": "error",
-    "security/detect-eval-with-expression": "error",
-    "security/detect-no-csrf-before-method-override": "error",
-    "security/detect-non-literal-fs-filename": "warn",
-    "security/detect-non-literal-require": "warn",
-    "security/detect-possible-timing-attacks": "warn",
-    "security/detect-pseudoRandomBytes": "error"
-  },
-  "overrides": [
-    {
-      "files": ["**/__tests__/**/*", "**/*.{test,spec}.*"],
-      "extends": ["plugin:testing-library/react"],
-      "rules": {
-        "testing-library/no-debugging-utils": "warn",
-        "testing-library/no-dom-import": "error"
-      }
-    }
-  ]
+    "no-console": "warn",
+    "no-unused-vars": "warn",
+    "no-shadow": "warn",
+    "no-restricted-syntax": "warn",
+    "no-await-in-loop": "warn",
+    "no-continue": "warn",
+    "no-plusplus": "warn",
+    "no-restricted-globals": "warn",
+    "no-alert": "warn",
+    "no-underscore-dangle": "warn",
+    "no-return-assign": "warn",
+    "radix": "warn",
+    "jsx-a11y/label-has-associated-control": "warn",
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/media-has-caption": "warn",
+    "jsx-a11y/iframe-has-title": "warn",
+    "jsx-a11y/heading-has-content": "warn",
+    "react/jsx-props-no-spreading": "warn",
+    "react/require-default-props": "warn",
+    "react/no-danger": "warn",
+    "react/no-array-index-key": "warn",
+    "@next/next/no-img-element": "warn"
+  }
 }

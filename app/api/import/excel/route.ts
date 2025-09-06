@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/auth';
-import { importExcelSchema } from '@/lib/validations';
 import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
 import { generateCode, slugify } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireRole('EDITOR');
+    await requireRole('EDITOR');
     
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -50,29 +49,31 @@ export async function POST(request: NextRequest) {
       const areasSheet = workbook.Sheets.Areas;
       const areasData = XLSX.utils.sheet_to_json(areasSheet);
 
-      for (const [index, areaData] of Array.from(areasData.entries())) {
-        try {
-          const name = (areaData as any).Nome as string;
-          if (!name) continue;
+      await Promise.all(
+        Array.from(areasData.entries()).map(async ([index, areaData]) => {
+          try {
+            const name = (areaData as any).Nome as string;
+            if (!name) return;
 
-          const slug = slugify(name);
+            const slug = slugify(name);
 
-          // Check if area already exists
-          const existingArea = await prisma.area.findUnique({
-            where: { name },
-          });
-
-          if (!existingArea) {
-            await prisma.area.create({
-              data: { name, slug },
+            // Check if area already exists
+            const existingArea = await prisma.area.findUnique({
+              where: { name },
             });
-            results.areas.created++;
+
+            if (!existingArea) {
+              await prisma.area.create({
+                data: { name, slug },
+              });
+              results.areas.created++;
+            }
+          } catch (error) {
+            errors.push(`Área linha ${index + 2}: ${error}`);
+            results.areas.errors++;
           }
-        } catch (error) {
-          errors.push(`Área linha ${index + 2}: ${error}`);
-          results.areas.errors++;
-        }
-      }
+        })
+      );
     }
 
     // Import Subareas
@@ -80,44 +81,46 @@ export async function POST(request: NextRequest) {
       const subareasSheet = workbook.Sheets.Subareas;
       const subareasData = XLSX.utils.sheet_to_json(subareasSheet);
 
-      for (const [index, subareaData] of Array.from(subareasData.entries())) {
-        try {
-          const name = (subareaData as any).Nome as string;
-          const areaName = (subareaData as any)['Área'] as string;
+      await Promise.all(
+        Array.from(subareasData.entries()).map(async ([index, subareaData]) => {
+          try {
+            const name = (subareaData as any).Nome as string;
+            const areaName = (subareaData as any)['Área'] as string;
 
-          if (!name || !areaName) continue;
+            if (!name || !areaName) return;
 
-          const area = await prisma.area.findUnique({
-            where: { name: areaName },
-          });
-
-          if (!area) {
-            errors.push(`Subárea linha ${index + 2}: Área "${areaName}" não encontrada`);
-            results.subareas.errors++;
-            continue;
-          }
-
-          // Check if subarea already exists
-          const existingSubarea = await prisma.subarea.findUnique({
-            where: {
-              areaId_name: {
-                areaId: area.id,
-                name,
-              },
-            },
-          });
-
-          if (!existingSubarea) {
-            await prisma.subarea.create({
-              data: { name, areaId: area.id },
+            const area = await prisma.area.findUnique({
+              where: { name: areaName },
             });
-            results.subareas.created++;
+
+            if (!area) {
+              errors.push(`Subárea linha ${index + 2}: Área "${areaName}" não encontrada`);
+              results.subareas.errors++;
+              return;
+            }
+
+            // Check if subarea already exists
+            const existingSubarea = await prisma.subarea.findUnique({
+              where: {
+                areaId_name: {
+                  areaId: area.id,
+                  name,
+                },
+              },
+            });
+
+            if (!existingSubarea) {
+              await prisma.subarea.create({
+                data: { name, areaId: area.id },
+              });
+              results.subareas.created++;
+            }
+          } catch (error) {
+            errors.push(`Subárea linha ${index + 2}: ${error}`);
+            results.subareas.errors++;
           }
-        } catch (error) {
-          errors.push(`Subárea linha ${index + 2}: ${error}`);
-          results.subareas.errors++;
-        }
-      }
+        })
+      );
     }
 
     // Import Groups
@@ -125,30 +128,32 @@ export async function POST(request: NextRequest) {
       const groupsSheet = workbook.Sheets.Grupos;
       const groupsData = XLSX.utils.sheet_to_json(groupsSheet);
 
-      for (const [index, groupData] of Array.from(groupsData.entries())) {
-        try {
-          const name = (groupData as any).Nome as string;
-          const context = (groupData as any).Contexto as string;
-          const codeBase = (groupData as any)['Código Base'] as string;
+      await Promise.all(
+        Array.from(groupsData.entries()).map(async ([index, groupData]) => {
+          try {
+            const name = (groupData as any).Nome as string;
+            const context = (groupData as any).Contexto as string;
+            const codeBase = (groupData as any)['Código Base'] as string;
 
-          if (!name || !context || !codeBase) continue;
+            if (!name || !context || !codeBase) return;
 
-          // Check if group already exists
-          const existingGroup = await prisma.simulatorGroup.findFirst({
-            where: { codeBase },
-          });
-
-          if (!existingGroup) {
-            await prisma.simulatorGroup.create({
-              data: { name, context, codeBase },
+            // Check if group already exists
+            const existingGroup = await prisma.simulatorGroup.findFirst({
+              where: { codeBase },
             });
-            results.groups.created++;
+
+            if (!existingGroup) {
+              await prisma.simulatorGroup.create({
+                data: { name, context, codeBase },
+              });
+              results.groups.created++;
+            }
+          } catch (error) {
+            errors.push(`Grupo linha ${index + 2}: ${error}`);
+            results.groups.errors++;
           }
-        } catch (error) {
-          errors.push(`Grupo linha ${index + 2}: ${error}`);
-          results.groups.errors++;
-        }
-      }
+        })
+      );
     }
 
     // Import Simulators
@@ -156,7 +161,9 @@ export async function POST(request: NextRequest) {
       const simulatorsSheet = workbook.Sheets.Simuladores;
       const simulatorsData = XLSX.utils.sheet_to_json(simulatorsSheet);
 
-      for (const [index, simulatorData] of Array.from(simulatorsData.entries())) {
+      // Process simulators sequentially to avoid race conditions
+      for (let i = 0; i < simulatorsData.length; i += 1) {
+        const simulatorData = simulatorsData[i];
         try {
           const discipline = (simulatorData as any).Disciplina as string;
           const groupName = (simulatorData as any).Grupo as string;
@@ -192,7 +199,7 @@ export async function POST(request: NextRequest) {
           });
 
           if (!group || !area || !subarea) {
-            errors.push(`Simulador linha ${index + 2}: Grupo, área ou subárea não encontrados`);
+            errors.push(`Simulador linha ${i + 2}: Grupo, área ou subárea não encontrados`);
             results.simulators.errors++;
             continue;
           }
@@ -205,7 +212,7 @@ export async function POST(request: NextRequest) {
 
           let sequence = 1;
           if (lastSimulator) {
-            const lastSequence = parseInt(lastSimulator.code.split('-').pop() || '0');
+            const lastSequence = parseInt(lastSimulator.code.split('-').pop() || '0', 10);
             sequence = lastSequence + 1;
           }
 
@@ -237,7 +244,7 @@ export async function POST(request: NextRequest) {
             results.simulators.created++;
           }
         } catch (error) {
-          errors.push(`Simulador linha ${index + 2}: ${error}`);
+          errors.push(`Simulador linha ${i + 2}: ${error}`);
           results.simulators.errors++;
         }
       }
@@ -248,7 +255,8 @@ export async function POST(request: NextRequest) {
       const roadmapSheet = workbook.Sheets.Roadmap;
       const roadmapData = XLSX.utils.sheet_to_json(roadmapSheet);
 
-      for (const [index, roadmapItem] of Array.from(roadmapData.entries())) {
+      for (let i = 0; i < roadmapData.length; i += 1) {
+        const roadmapItem = roadmapData[i];
         try {
           const groupName = (roadmapItem as any).Grupo as string;
           const status = (roadmapItem as any).Status as string;
@@ -257,7 +265,7 @@ export async function POST(request: NextRequest) {
           const confidence = Number((roadmapItem as any).Confidence);
           const effort = Number((roadmapItem as any).Effort);
 
-          if (!groupName || isNaN(reach) || isNaN(impact) || isNaN(confidence) || isNaN(effort)) {
+          if (!groupName || Number.isNaN(reach) || Number.isNaN(impact) || Number.isNaN(confidence) || Number.isNaN(effort)) {
             continue;
           }
 
@@ -266,7 +274,7 @@ export async function POST(request: NextRequest) {
           });
 
           if (!group) {
-            errors.push(`Roadmap linha ${index + 2}: Grupo "${groupName}" não encontrado`);
+            errors.push(`Roadmap linha ${i + 2}: Grupo "${groupName}" não encontrado`);
             results.roadmap.errors++;
             continue;
           }
@@ -293,7 +301,7 @@ export async function POST(request: NextRequest) {
             results.roadmap.created++;
           }
         } catch (error) {
-          errors.push(`Roadmap linha ${index + 2}: ${error}`);
+          errors.push(`Roadmap linha ${i + 2}: ${error}`);
           results.roadmap.errors++;
         }
       }
@@ -309,6 +317,7 @@ export async function POST(request: NextRequest) {
       message: 'Importação concluída',
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error importing Excel:', error);
     return NextResponse.json(
       {
